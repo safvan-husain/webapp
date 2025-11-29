@@ -12,7 +12,7 @@ export function ThemeToggle() {
         else if (theme === 'dark') setTheme('system')
         else setTheme('light')
       }}
-      className="rounded-lg border border-gray-200 dark:border-gray-700 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+      className="rounded-lg border border-border p-2 hover:bg-accent transition-colors"
       aria-label="Toggle theme"
     >
       {theme === 'light' && (

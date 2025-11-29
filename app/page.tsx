@@ -1,40 +1,32 @@
 import Link from "next/link";
 import { getCurrentUser } from '@/lib/queries/auth.queries'
+import { Button } from '@/components/ui/button'
 
 export default async function Home() {
   const user = await getCurrentUser()
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="max-w-2xl w-full text-center px-6">
-        <h1 className="text-5xl font-bold mb-4">Job Portal</h1>
-        <p className="text-xl text-gray-600 mb-8">
+        <h1 className="text-5xl font-bold mb-4 tracking-tight">Job Portal</h1>
+        <p className="text-xl text-muted-foreground mb-8">
           Connect companies with talented job seekers
         </p>
         
         {user ? (
           <div className="space-y-4">
             <p className="text-lg">Welcome back, {user.fullName}!</p>
-            <Link
-              href="/dashboard"
-              className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Go to Dashboard
+            <Link href="/dashboard">
+              <Button size="lg">Go to Dashboard</Button>
             </Link>
           </div>
         ) : (
           <div className="flex gap-4 justify-center">
-            <Link
-              href="/login"
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Login
+            <Link href="/login">
+              <Button size="lg">Login</Button>
             </Link>
-            <Link
-              href="/register"
-              className="bg-white text-blue-600 border-2 border-blue-600 px-8 py-3 rounded-lg hover:bg-blue-50 transition-colors"
-            >
-              Register
+            <Link href="/register">
+              <Button variant="outline" size="lg">Register</Button>
             </Link>
           </div>
         )}

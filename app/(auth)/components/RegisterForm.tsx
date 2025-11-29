@@ -2,6 +2,11 @@
 
 import { useActionState } from 'react'
 import { registerAction } from '@/lib/actions/auth.actions'
+import { Alert } from '@/components/ui/alert'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 export function RegisterForm() {
   const [state, formAction, isPending] = useActionState(registerAction, null)
@@ -9,104 +14,95 @@ export function RegisterForm() {
   return (
     <form action={formAction} className="space-y-4">
       {state?.error && (
-        <div className="bg-red-50 text-red-600 p-3 rounded">
+        <Alert variant="destructive" title="Error">
           {state.error}
-        </div>
+        </Alert>
       )}
 
       <div>
-        <label htmlFor="fullName" className="block text-sm font-medium mb-1">
-          Full Name
-        </label>
-        <input
+        <Label htmlFor="fullName">Full Name</Label>
+        <Input
           id="fullName"
           name="fullName"
           type="text"
           placeholder="Enter your full name"
           required
-          className="w-full px-3 py-2 border rounded"
         />
         {state?.fieldErrors?.fullName && (
-          <p className="text-red-600 text-sm mt-1">{state.fieldErrors.fullName[0]}</p>
+          <p className="text-destructive text-sm mt-1">{state.fieldErrors.fullName[0]}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium mb-1">
-          Email
-        </label>
-        <input
+        <Label htmlFor="email">Email</Label>
+        <Input
           id="email"
           name="email"
           type="email"
           placeholder="you@example.com"
           required
-          className="w-full px-3 py-2 border rounded"
         />
         {state?.fieldErrors?.email && (
-          <p className="text-red-600 text-sm mt-1">{state.fieldErrors.email[0]}</p>
+          <p className="text-destructive text-sm mt-1">{state.fieldErrors.email[0]}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium mb-1">
-          Password
-        </label>
-        <input
+        <Label htmlFor="password">Password</Label>
+        <Input
           id="password"
           name="password"
           type="password"
           placeholder="Min. 8 characters"
           required
-          className="w-full px-3 py-2 border rounded"
         />
         {state?.fieldErrors?.password && (
-          <p className="text-red-600 text-sm mt-1">{state.fieldErrors.password[0]}</p>
+          <p className="text-destructive text-sm mt-1">{state.fieldErrors.password[0]}</p>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">I am a:</label>
+        <Label className="mb-2">I am a:</Label>
         <div className="flex gap-4">
-          <label className="flex items-center">
+          <label className="flex items-center cursor-pointer">
             <input
               type="radio"
               name="userType"
               value="SEEKER"
               required
-              className="mr-2"
+              className="mr-2 cursor-pointer"
             />
-            Job Seeker
+            <span className="text-sm">Job Seeker</span>
           </label>
-          <label className="flex items-center">
+          <label className="flex items-center cursor-pointer">
             <input
               type="radio"
               name="userType"
               value="COMPANY"
               required
-              className="mr-2"
+              className="mr-2 cursor-pointer"
             />
-            Company
+            <span className="text-sm">Company</span>
           </label>
         </div>
         {state?.fieldErrors?.userType && (
-          <p className="text-red-600 text-sm mt-1">{state.fieldErrors.userType[0]}</p>
+          <p className="text-destructive text-sm mt-1">{state.fieldErrors.userType[0]}</p>
         )}
       </div>
 
-      <button
+      <Button
         type="submit"
         disabled={isPending}
-        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+        className="w-full"
       >
         {isPending ? 'Creating account...' : 'Create Account'}
-      </button>
+      </Button>
 
-      <p className="text-center text-sm">
+      <p className="text-center text-sm text-muted-foreground">
         Already have an account?{' '}
-        <a href="/login" className="text-blue-600 hover:underline">
+        <Link href="/login" className="text-primary hover:underline">
           Login
-        </a>
+        </Link>
       </p>
     </form>
   )

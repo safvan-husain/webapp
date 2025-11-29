@@ -12,10 +12,10 @@ export default async function ProfileSetupPage() {
   // For now, we'll show the appropriate form based on userType
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">Complete Your Profile</h1>
-        <p className="text-gray-600 mb-8">
+        <h1 className="text-3xl font-semibold mb-2 tracking-tight">Complete Your Profile</h1>
+        <p className="text-muted-foreground mb-8">
           Help us understand you better to find the perfect matches
         </p>
 

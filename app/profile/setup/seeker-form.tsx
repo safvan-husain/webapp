@@ -3,6 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSeekerProfileAction } from '@/lib/actions/profile.actions'
+import { Alert } from '@/components/ui/alert'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 
 export default function SeekerProfileForm({ userId }: { userId: string }) {
   const router = useRouter()
@@ -36,11 +40,11 @@ export default function SeekerProfileForm({ userId }: { userId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
+    <form onSubmit={handleSubmit} className="bg-card border border-border rounded-lg shadow-sm p-6 space-y-6">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        <Alert variant="destructive" title="Error">
           {error}
-        </div>
+        </Alert>
       )}
 
       {step === 1 && (
@@ -48,39 +52,38 @@ export default function SeekerProfileForm({ userId }: { userId: string }) {
           <h2 className="text-xl font-semibold">Skills & Experience</h2>
           
           <div>
-            <label className="block text-sm font-medium mb-2">Primary Skill</label>
-            <input
+            <Label>Primary Skill</Label>
+            <Input
               type="text"
               value={formData.skills[0].name}
               onChange={(e) => setFormData({
                 ...formData,
                 skills: [{ ...formData.skills[0], name: e.target.value }]
               })}
-              className="w-full px-3 py-2 border rounded-lg"
+              placeholder="e.g., React, Node.js, Python"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Years of Experience</label>
-            <input
+            <Label>Years of Experience</Label>
+            <Input
               type="number"
               value={formData.skills[0].yearsOfExperience}
               onChange={(e) => setFormData({
                 ...formData,
                 skills: [{ ...formData.skills[0], yearsOfExperience: Number(e.target.value) }]
               })}
-              className="w-full px-3 py-2 border rounded-lg"
               min="0"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Job Type Preferences</label>
+            <Label className="mb-2">Job Type Preferences</Label>
             <div className="space-y-2">
               {['FULL_TIME', 'PART_TIME', 'FREELANCE', 'CONSULTING', 'STARTUP'].map((type) => (
-                <label key={type} className="flex items-center">
+                <label key={type} className="flex items-center cursor-pointer">
                   <input
                     type="checkbox"
                     checked={formData.jobType.includes(type)}
@@ -91,20 +94,20 @@ export default function SeekerProfileForm({ userId }: { userId: string }) {
                         setFormData({ ...formData, jobType: formData.jobType.filter(t => t !== type) })
                       }
                     }}
-                    className="mr-2"
+                    className="mr-2 cursor-pointer"
                   />
-                  {type.replace('_', ' ')}
+                  <span className="text-sm">{type.replace('_', ' ')}</span>
                 </label>
               ))}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Remote Preference</label>
+            <Label>Remote Preference</Label>
             <select
               value={formData.remotePreference}
               onChange={(e) => setFormData({ ...formData, remotePreference: e.target.value as any })}
-              className="w-full px-3 py-2 border rounded-lg"
+              className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors"
             >
               <option value="ANY">Any</option>
               <option value="REMOTE">Remote Only</option>
@@ -113,13 +116,13 @@ export default function SeekerProfileForm({ userId }: { userId: string }) {
             </select>
           </div>
 
-          <button
+          <Button
             type="submit"
             disabled={loading || formData.jobType.length === 0}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="w-full"
           >
             {loading ? 'Creating Profile...' : 'Complete Profile'}
-          </button>
+          </Button>
         </div>
       )}
     </form>
