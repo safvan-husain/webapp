@@ -13,12 +13,83 @@ model User {
   passwordHash String
   fullName     String
   userType     UserType
-  refObjectId  String?
+  refObjectId  String?  @db.ObjectId
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  seekerProfile  SeekerProfile?  @relation(fields: [refObjectId], references: [id])
+  companyProfile CompanyProfile? @relation(fields: [refObjectId], references: [id])
+
   @@index([userType])
+}
+
+model SeekerProfile {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // Structured data
+  skills            Json[]   // [{name, yearsOfExperience, proficiency}]
+  workHistory       Json[]   // [{company, role, duration, description}]
+  projects          Json[]   // [{name, role, description, links}]
+  jobType           String[] // ['FULL_TIME', 'PART_TIME', 'FREELANCE', 'CONSULTING']
+  locationPreference String?
+  remotePreference  String?  // 'REMOTE', 'HYBRID', 'ONSITE', 'ANY'
+  links             Json?    // {github, portfolio, linkedin, etc}
+  
+  // Unstructured data (AI-collected)
+  vision            String?
+  longTermGoals     String?
+  workingStyle      String?
+  culturePreferences String?
+  problemSolvingApproach String?
+  pastProjectStories Json[]
+  
+  // Embeddings (stored separately for vector search)
+  profileEmbedding  String?  // JSON string of embedding vector
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  users User[]
+
+  @@index([jobType])
+  @@index([locationPreference])
+}
+
+model CompanyProfile {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  // Structured data
+  companyName       String
+  companyType       String   // 'BUSINESS', 'STARTUP', 'SOLO_FOUNDER', 'CLIENT'
+  industry          String
+  teamSize          Int
+  website           String?
+  productService    String?
+  workModel         String?  // 'REMOTE', 'HYBRID', 'ONSITE'
+  links             Json?    // Links to products/work
+  
+  // Unstructured data
+  companyOverview   String?
+  teamStructure     String?
+  workCulture       String?
+  expectations      String?
+  constraints       String?
+  
+  // Founder profile (for companies ≤ 200 employees)
+  founderProfile    Json?    // {name, background, vision, pastProjects, philosophy, links}
+  
+  // Embeddings
+  profileEmbedding  String?  // JSON string of embedding vector
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  users User[]
+
+  @@index([industry])
+  @@index([teamSize])
+  @@index([companyType])
 }
 
 enum UserType {
