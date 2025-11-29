@@ -18,6 +18,9 @@ All architecture rules are now in `.kiro/steering/`:
 - **`agents-testing.md`** - Testing strategy, unit tests, integration tests, test patterns
   - Loaded when working in `__tests__/**/*` or `*.test.ts` files
 
+- **`agents-error-handling.md`** - Error handling, toast notifications, expandable error details, copy-to-clipboard
+  - Loaded when working with error handling, forms, or server actions
+
 ### **Manual Files (Load Explicitly)**
 
 - **`agents-progress.md`** - Project progress tracker, completed features, next steps
@@ -42,6 +45,8 @@ All architecture rules are now in `.kiro/steering/`:
 **Working on UI/pages?** → `agents-architecture.md` + `agents-frontend.md` (auto-loaded)
 
 **Writing tests?** → `agents-architecture.md` + `agents-testing.md` (auto-loaded)
+
+**Handling errors?** → `agents-architecture.md` + `agents-error-handling.md` (auto-loaded)
 
 **Need project status?** → Reference `#agents-progress.md` in chat
 

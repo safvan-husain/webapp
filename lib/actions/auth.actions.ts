@@ -5,9 +5,10 @@ import { revalidatePath } from 'next/cache'
 import { RegisterSchema, LoginSchema } from '@/lib/validations/auth.schema'
 import { registerUser, loginUser } from '@/lib/services/auth.service'
 import { createSession, deleteSession } from '@/lib/session'
-import { AppError } from '@/lib/errors/app-error'
+import { handleServerError } from '@/lib/utils/error-handler'
+import type { ActionResult } from '@/lib/errors/types'
 
-export async function registerAction(prevState: any, formData: FormData) {
+export async function registerAction(prevState: any, formData: FormData): Promise<ActionResult> {
   const result = RegisterSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
@@ -16,9 +17,15 @@ export async function registerAction(prevState: any, formData: FormData) {
   })
 
   if (!result.success) {
-    return { 
-      error: 'Validation failed', 
-      fieldErrors: result.error.flatten().fieldErrors 
+    return {
+      success: false,
+      error: {
+        message: 'Validation failed',
+        code: 'VALIDATION_ERROR',
+        status: 400,
+        details: result.error.flatten().fieldErrors,
+        timestamp: new Date().toISOString(),
+      }
     }
   }
 
@@ -30,26 +37,32 @@ export async function registerAction(prevState: any, formData: FormData) {
 
     revalidatePath('/', 'layout')
   } catch (error) {
-    if (error instanceof AppError) {
-      return { error: error.details }
+    return {
+      success: false,
+      error: handleServerError(error)
     }
-    return { error: 'Registration failed. Please try again.' }
   }
 
   // Redirect to profile setup if no profile exists, otherwise dashboard
   redirect('/profile/setup')
 }
 
-export async function loginAction(prevState: any, formData: FormData) {
+export async function loginAction(prevState: any, formData: FormData): Promise<ActionResult> {
   const result = LoginSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
   })
 
   if (!result.success) {
-    return { 
-      error: 'Validation failed', 
-      fieldErrors: result.error.flatten().fieldErrors 
+    return {
+      success: false,
+      error: {
+        message: 'Validation failed',
+        code: 'VALIDATION_ERROR',
+        status: 400,
+        details: result.error.flatten().fieldErrors,
+        timestamp: new Date().toISOString(),
+      }
     }
   }
 
@@ -68,10 +81,10 @@ export async function loginAction(prevState: any, formData: FormData) {
       redirect('/dashboard')
     }
   } catch (error) {
-    if (error instanceof AppError) {
-      return { error: error.details }
+    return {
+      success: false,
+      error: handleServerError(error)
     }
-    return { error: 'Login failed. Please try again.' }
   }
 }
 

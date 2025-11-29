@@ -3,15 +3,15 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createCompanyProfileAction } from '@/lib/actions/profile.actions'
-import { Alert } from '@/components/ui/alert'
+import { showErrorToast } from '@/components/ui/error-toast'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 export default function CompanyProfileForm({ userId, teamSize }: { userId: string; teamSize: number }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     companyName: '',
@@ -25,26 +25,20 @@ export default function CompanyProfileForm({ userId, teamSize }: { userId: strin
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
 
     const result = await createCompanyProfileAction(userId, formData)
 
-    if ('error' in result) {
-      setError(typeof result.error === 'string' ? result.error : 'Failed to create profile')
+    if (!result.success) {
+      showErrorToast(result.error!)
       setLoading(false)
     } else {
+      toast.success('Profile created successfully!')
       router.push('/dashboard')
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="bg-card border border-border rounded-lg shadow-sm p-6 space-y-6">
-      {error && (
-        <Alert variant="destructive" title="Error">
-          {error}
-        </Alert>
-      )}
-
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Company Information</h2>
         

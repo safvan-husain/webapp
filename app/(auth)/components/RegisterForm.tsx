@@ -1,8 +1,8 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect } from 'react'
 import { registerAction } from '@/lib/actions/auth.actions'
-import { Alert } from '@/components/ui/alert'
+import { showErrorToast } from '@/components/ui/error-toast'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -11,13 +11,14 @@ import Link from 'next/link'
 export function RegisterForm() {
   const [state, formAction, isPending] = useActionState(registerAction, null)
 
+  useEffect(() => {
+    if (state && !state.success && state.error) {
+      showErrorToast(state.error)
+    }
+  }, [state])
+
   return (
     <form action={formAction} className="space-y-4">
-      {state?.error && (
-        <Alert variant="destructive" title="Error">
-          {state.error}
-        </Alert>
-      )}
 
       <div>
         <Label htmlFor="fullName">Full Name</Label>
@@ -28,8 +29,8 @@ export function RegisterForm() {
           placeholder="Enter your full name"
           required
         />
-        {state?.fieldErrors?.fullName && (
-          <p className="text-destructive text-sm mt-1">{state.fieldErrors.fullName[0]}</p>
+        {state?.error?.details?.fullName && (
+          <p className="text-destructive text-sm mt-1">{state.error.details.fullName[0]}</p>
         )}
       </div>
 
@@ -42,8 +43,8 @@ export function RegisterForm() {
           placeholder="you@example.com"
           required
         />
-        {state?.fieldErrors?.email && (
-          <p className="text-destructive text-sm mt-1">{state.fieldErrors.email[0]}</p>
+        {state?.error?.details?.email && (
+          <p className="text-destructive text-sm mt-1">{state.error.details.email[0]}</p>
         )}
       </div>
 
@@ -56,8 +57,8 @@ export function RegisterForm() {
           placeholder="Min. 8 characters"
           required
         />
-        {state?.fieldErrors?.password && (
-          <p className="text-destructive text-sm mt-1">{state.fieldErrors.password[0]}</p>
+        {state?.error?.details?.password && (
+          <p className="text-destructive text-sm mt-1">{state.error.details.password[0]}</p>
         )}
       </div>
 
@@ -85,8 +86,8 @@ export function RegisterForm() {
             <span className="text-sm">Company</span>
           </label>
         </div>
-        {state?.fieldErrors?.userType && (
-          <p className="text-destructive text-sm mt-1">{state.fieldErrors.userType[0]}</p>
+        {state?.error?.details?.userType && (
+          <p className="text-destructive text-sm mt-1">{state.error.details.userType[0]}</p>
         )}
       </div>
 

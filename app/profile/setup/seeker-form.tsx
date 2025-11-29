@@ -3,16 +3,16 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSeekerProfileAction } from '@/lib/actions/profile.actions'
-import { Alert } from '@/components/ui/alert'
+import { showErrorToast } from '@/components/ui/error-toast'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 export default function SeekerProfileForm({ userId }: { userId: string }) {
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     skills: [{ name: '', yearsOfExperience: 0, proficiency: 'INTERMEDIATE' as const }],
@@ -27,26 +27,20 @@ export default function SeekerProfileForm({ userId }: { userId: string }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(null)
 
     const result = await createSeekerProfileAction(userId, formData)
 
-    if ('error' in result) {
-      setError(typeof result.error === 'string' ? result.error : 'Failed to create profile')
+    if (!result.success) {
+      showErrorToast(result.error!)
       setLoading(false)
     } else {
+      toast.success('Profile created successfully!')
       router.push('/dashboard')
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="bg-card border border-border rounded-lg shadow-sm p-6 space-y-6">
-      {error && (
-        <Alert variant="destructive" title="Error">
-          {error}
-        </Alert>
-      )}
-
       {step === 1 && (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Skills & Experience</h2>

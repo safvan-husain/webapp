@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "@/lib/contexts/theme-provider";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -31,6 +32,7 @@ export default function RootLayout({
       >
         <ThemeProvider defaultTheme="system" storageKey="app-theme">
           {children}
+          <Toaster position="top-right" expand={false} richColors />
         </ThemeProvider>
       </body>
     </html>
