@@ -15,11 +15,13 @@
   "dependencies": {
     "@prisma/client": "6.19",
     "bcryptjs": "^3.0.3",
+    "jose": "^6.1.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^7.0.0",
     "next": "16.0.5",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "server-only": "^0.0.1",
     "zod": "^4.1.13"
   },
   "devDependencies": {

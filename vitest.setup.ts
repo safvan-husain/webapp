@@ -1,7 +1,10 @@
 import '@testing-library/jest-dom'
-import { beforeAll, afterAll, beforeEach } from 'vitest'
+import { beforeAll, afterAll, beforeEach, vi } from 'vitest'
 import { config } from 'dotenv'
 import { prisma } from './lib/db/prisma'
+
+// Mock server-only to allow testing server-side code
+vi.mock('server-only', () => ({}))
 
 // Load test environment variables (override existing .env)
 config({ path: '.env.test', override: true })
