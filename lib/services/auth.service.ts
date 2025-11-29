@@ -1,7 +1,6 @@
 import { prisma } from '@/lib/db/prisma'
 import { AppError } from '@/lib/errors/app-error'
 import { hashPassword, verifyPassword } from '@/lib/utils/password'
-import { generateToken } from '@/lib/utils/jwt'
 import type { RegisterInput, LoginInput } from '@/lib/validations/auth.schema'
 
 export async function registerUser(input: RegisterInput) {
@@ -33,13 +32,7 @@ export async function registerUser(input: RegisterInput) {
     }
   })
 
-  const token = generateToken({
-    userId: user.id,
-    email: user.email,
-    userType: user.userType,
-  })
-
-  return { user, token }
+  return { user }
 }
 
 export async function loginUser(input: LoginInput) {
@@ -60,12 +53,6 @@ export async function loginUser(input: LoginInput) {
     throw new AppError(403, 'ACCOUNT_SUSPENDED', 'Account has been suspended')
   }
 
-  const token = generateToken({
-    userId: user.id,
-    email: user.email,
-    userType: user.userType,
-  })
-
   return {
     user: {
       id: user.id,
@@ -75,6 +62,5 @@ export async function loginUser(input: LoginInput) {
       refObjectId: user.refObjectId,
       createdAt: user.createdAt,
     },
-    token,
   }
 }

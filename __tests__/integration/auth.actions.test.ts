@@ -1,7 +1,6 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { registerAction, loginAction } from '@/lib/actions/auth.actions'
 import { prisma } from '@/lib/db/prisma'
-import { beforeEach } from 'node:test'
 
 // Mock Next.js functions
 vi.mock('next/navigation', () => ({
@@ -22,6 +21,16 @@ vi.mock('next/headers', () => ({
   })),
 }))
 
+// Mock session management
+vi.mock('@/lib/session', () => ({
+  createSession: vi.fn(),
+  deleteSession: vi.fn(),
+  getSession: vi.fn(),
+  updateSession: vi.fn(),
+  encrypt: vi.fn(),
+  decrypt: vi.fn(),
+}))
+
 describe('Auth Actions Integration Tests', () => {
 
   describe('registerAction', () => {
@@ -36,7 +45,7 @@ describe('Auth Actions Integration Tests', () => {
         await registerAction(null, formData)
       } catch (error: any) {
         expect(error.message).toContain('NEXT_REDIRECT')
-        expect(error.message).toContain('/dashboard')
+        expect(error.message).toContain('/profile/setup')
       }
 
       const user = await prisma.user.findUnique({
@@ -47,6 +56,13 @@ describe('Auth Actions Integration Tests', () => {
       expect(user?.fullName).toBe('Test User')
       expect(user?.userType).toBe('SEEKER')
       expect(user?.isActive).toBe(true)
+
+      // Verify createSession was called with correct arguments
+      const { createSession } = await import('@/lib/session')
+      expect(createSession).toHaveBeenCalledWith(
+        expect.any(String),
+        'SEEKER'
+      )
     })
 
     it('should return validation errors for invalid input', async () => {
@@ -130,8 +146,13 @@ describe('Auth Actions Integration Tests', () => {
         await loginAction(null, formData)
       } catch (error: any) {
         expect(error.message).toContain('NEXT_REDIRECT')
-        expect(error.message).toContain('/dashboard')
+        // Should redirect to profile/setup since no profile exists
+        expect(error.message).toContain('/profile/setup')
       }
+
+      // Verify createSession was called
+      const { createSession } = await import('@/lib/session')
+      expect(createSession).toHaveBeenCalled()
     })
 
     it('should return validation errors for invalid input', async () => {

@@ -1,12 +1,12 @@
-import { redirect } from 'next/navigation'
-import { getCurrentUser } from '@/lib/queries/auth.queries'
+import { getUser } from '@/lib/dal'
 import { logoutAction } from '@/lib/actions/auth.actions'
 
 export default async function DashboardPage() {
-  const user = await getCurrentUser()
+  const user = await getUser()
 
   if (!user) {
-    redirect('/login')
+    // This shouldn't happen as verifySession redirects, but keep as safety
+    return null
   }
 
   return (

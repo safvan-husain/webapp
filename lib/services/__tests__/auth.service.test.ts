@@ -20,7 +20,6 @@ describe('Auth Service', () => {
       expect(result.user.email).toBe('test@example.com')
       expect(result.user.fullName).toBe('Test User')
       expect(result.user.userType).toBe('SEEKER')
-      expect(result.token).toBeDefined()
 
       const dbUser = await prisma.user.findUnique({
         where: { email: 'test@example.com' }
@@ -87,7 +86,6 @@ describe('Auth Service', () => {
 
       expect(result.user).toBeDefined()
       expect(result.user.email).toBe('test@example.com')
-      expect(result.token).toBeDefined()
     })
 
     it('should throw error for invalid email', async () => {

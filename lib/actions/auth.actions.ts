@@ -1,10 +1,10 @@
 'use server'
 
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { RegisterSchema, LoginSchema } from '@/lib/validations/auth.schema'
 import { registerUser, loginUser } from '@/lib/services/auth.service'
+import { createSession, deleteSession } from '@/lib/session'
 import { AppError } from '@/lib/errors/app-error'
 
 export async function registerAction(prevState: any, formData: FormData) {
@@ -23,16 +23,10 @@ export async function registerAction(prevState: any, formData: FormData) {
   }
 
   try {
-    const { user, token } = await registerUser(result.data)
+    const { user } = await registerUser(result.data)
 
-    const cookieStore = await cookies()
-    cookieStore.set('auth_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-    })
+    // Create session with new session management
+    await createSession(user.id, user.userType)
 
     revalidatePath('/', 'layout')
   } catch (error) {
@@ -42,7 +36,8 @@ export async function registerAction(prevState: any, formData: FormData) {
     return { error: 'Registration failed. Please try again.' }
   }
 
-  redirect('/dashboard')
+  // Redirect to profile setup if no profile exists, otherwise dashboard
+  redirect('/profile/setup')
 }
 
 export async function loginAction(prevState: any, formData: FormData) {
@@ -59,31 +54,29 @@ export async function loginAction(prevState: any, formData: FormData) {
   }
 
   try {
-    const { user, token } = await loginUser(result.data)
+    const { user } = await loginUser(result.data)
 
-    const cookieStore = await cookies()
-    cookieStore.set('auth_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7,
-      path: '/',
-    })
+    // Create session with new session management
+    await createSession(user.id, user.userType)
 
     revalidatePath('/', 'layout')
+
+    // Redirect based on profile completion
+    if (!user.refObjectId) {
+      redirect('/profile/setup')
+    } else {
+      redirect('/dashboard')
+    }
   } catch (error) {
     if (error instanceof AppError) {
       return { error: error.details }
     }
     return { error: 'Login failed. Please try again.' }
   }
-
-  redirect('/dashboard')
 }
 
 export async function logoutAction() {
-  const cookieStore = await cookies()
-  cookieStore.delete('auth_token')
+  await deleteSession()
   revalidatePath('/', 'layout')
-  redirect('/login')
+  redirect('/')
 }
