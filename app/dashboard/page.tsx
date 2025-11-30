@@ -1,6 +1,7 @@
 import { getUser } from '@/lib/dal'
 import { logoutAction } from '@/lib/actions/auth.actions'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 export default async function DashboardPage() {
   const user = await getUser()
@@ -20,14 +21,21 @@ export default async function DashboardPage() {
               <p className="text-muted-foreground">User Type: {user.userType}</p>
               <p className="text-muted-foreground">Email: {user.email}</p>
             </div>
-            <form action={logoutAction}>
-              <Button 
-                type="submit"
-                variant="destructive"
-              >
-                Logout
-              </Button>
-            </form>
+            <div className="flex gap-2">
+              <Link href="/profile">
+                <Button variant="outline">
+                  View Profile
+                </Button>
+              </Link>
+              <form action={logoutAction}>
+                <Button 
+                  type="submit"
+                  variant="destructive"
+                >
+                  Logout
+                </Button>
+              </form>
+            </div>
           </div>
           
           <div className="border-t border-border pt-6">
