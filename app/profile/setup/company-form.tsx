@@ -7,6 +7,8 @@ import { showErrorToast } from '@/components/ui/error-toast'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { DynamicLinkInput } from '@/components/forms/dynamic-link-input'
+import type { CompanyLinksInput } from '@/components/forms/dynamic-link-input'
 import { toast } from 'sonner'
 
 export default function CompanyProfileForm({ userId, teamSize }: { userId: string; teamSize: number }) {
@@ -18,15 +20,28 @@ export default function CompanyProfileForm({ userId, teamSize }: { userId: strin
     companyType: 'BUSINESS' as const,
     industry: '',
     teamSize: 1,
-    website: '',
     workModel: 'HYBRID' as const,
+    links: {
+      website: '',
+      product: '',
+      other: [],
+    } as CompanyLinksInput,
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
-    const result = await createCompanyProfileAction(userId, formData)
+    const sanitizedLinks = {
+      website: formData.links.website.trim(),
+      product: formData.links.product.trim(),
+      other: formData.links.other.filter((link) => link.trim() !== ''),
+    }
+
+    const result = await createCompanyProfileAction(userId, {
+      ...formData,
+      links: sanitizedLinks,
+    })
 
     if (!result.success) {
       showErrorToast(result.error!)
@@ -87,15 +102,10 @@ export default function CompanyProfileForm({ userId, teamSize }: { userId: strin
           />
         </div>
 
-        <div>
-          <Label>Website (optional)</Label>
-          <Input
-            type="url"
-            value={formData.website}
-            onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-            placeholder="https://example.com"
-          />
-        </div>
+        <DynamicLinkInput
+          links={formData.links}
+          onChange={(links) => setFormData((prev) => ({ ...prev, links }))}
+        />
 
         <div>
           <Label>Work Model</Label>
