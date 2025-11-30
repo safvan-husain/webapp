@@ -24,7 +24,16 @@ export default async function ProfilePage() {
         </div>
 
         <div className="bg-card border border-border rounded-lg shadow-sm p-6">
-          <h1 className="text-3xl font-semibold mb-6 tracking-tight">Profile</h1>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-semibold tracking-tight">Profile</h1>
+            {profile && (
+              <Link href="/profile/edit">
+                <Button size="sm">
+                  Edit Profile
+                </Button>
+              </Link>
+            )}
+          </div>
 
           {/* User Information */}
           <section className="mb-8">
